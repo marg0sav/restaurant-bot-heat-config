@@ -1,0 +1,34 @@
+heat_template_version: 2021-04-16
+description: "2025-03-09 v1"
+resources:
+  savenko-group:
+    type: "OS::Neutron::SecurityGroup"
+    properties:
+      rules:
+        - ethertype: IPv4
+          protocol: tcp
+          remote_mode: remote_ip_prefix
+          port_range_min: 22
+          port_range_max: 22
+          remote_ip_prefix: "0.0.0.0/0"
+  savenko-server:
+    type: "OS::Nova::Server"
+    properties:
+      name: "savenko-instance-01"
+      flavor: "m1.small"
+      image: "d608627a-ef62-452d-8a74-1c307cbe276d" # ubuntu 22.04
+      availability_zone: nova
+      key_name: "savenko1"
+      networks:
+      - port: { get_resource: server-01-port }
+    depends_on:
+      - savenko-group
+
+  server-01-port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: "17eae9b6-2168-4a07-a0d3-66d5ad2a9f0e" # students.net ID
+      security_groups:
+        - default
+        - { get_resource: savenko-group }
+  
