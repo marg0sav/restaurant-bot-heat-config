@@ -47,8 +47,8 @@ resource "openstack_networking_port_v2" "server_port" {
   name       = "savenko-instance-port"
   network_id = data.openstack_networking_network_v2.students_net.id
 
-  # Привязываем и default, и нашу группу
-  security_groups = [
+  # вместо security_groups
+  security_group_ids = [
     data.openstack_networking_secgroup_v2.default_sg.id,
     openstack_networking_secgroup_v2.savenko_group.id,
   ]
