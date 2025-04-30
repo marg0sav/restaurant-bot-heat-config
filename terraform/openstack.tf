@@ -16,9 +16,9 @@ provider "openstack" {
   tenant_name = var.os_tenant_name
 }
 
-# --- Получаем существующую сеть по ID ---
+# --- Получаем существующую сеть по имени ---
 data "openstack_networking_network_v2" "students_net" {
-  id = "17eae9b6-2168-4a07-a0d3-66d5ad2a9f0e"
+  name = "sutdents-net"
 }
 
 # --- Берём стандартную security group по имени "default" ---
