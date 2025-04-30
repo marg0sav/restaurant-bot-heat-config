@@ -88,7 +88,6 @@ resource "null_resource" "wait_for_ssh" {
     host             = openstack_compute_instance_v2.savenko_server.access_ip_v4
 
     agent            = true              # используем ssh-agent
-    agent_forwarding = true              # (опционально) проброс агента на VM
     timeout          = "5m"
   }
 
