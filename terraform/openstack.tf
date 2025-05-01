@@ -97,13 +97,14 @@ resource "null_resource" "wait_for_ssh" {
 }
 
 # --- Генерим динамический inventory для Ansible ---
-data "time_static" "now" {}
+resource "time_static" "now" {}
 
 resource "null_resource" "generate_inventory" {
   depends_on = [null_resource.wait_for_ssh]
 
   triggers = {
     server_ip = openstack_compute_instance_v2.savenko_server.access_ip_v4
+    run_id    = time_static.now.id
   }
 
   provisioner "local-exec" {
