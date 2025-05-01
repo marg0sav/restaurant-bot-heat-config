@@ -97,6 +97,8 @@ resource "null_resource" "wait_for_ssh" {
 }
 
 # --- Генерим динамический inventory для Ansible ---
+data "time_static" "now" {}
+
 resource "null_resource" "generate_inventory" {
   depends_on = [null_resource.wait_for_ssh]
 
