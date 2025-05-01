@@ -106,8 +106,8 @@ resource "null_resource" "generate_inventory" {
 
   provisioner "local-exec" {
     command = <<EOT
-      echo "[quizbot]" > hosts.ini
-      echo "${openstack_compute_instance_v2.savenko_server.access_ip_v4} ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/crplab-server" >> hosts.ini
+      echo "[restaurantbot]" > hosts.ini
+      echo "${openstack_compute_instance_v2.savenko_server.access_ip_v4}" >> hosts.ini
     EOT
   }
 }
