@@ -33,7 +33,6 @@
         version: fix-qualifier-
         update: yes
         force: yes
-        clean: yes
 
     - name: Привилегии на каталог проекта
       file:
