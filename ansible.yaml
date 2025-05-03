@@ -66,7 +66,7 @@
     - name: Собрать JAR-файл через Maven
       command: mvn clean package
       args:
-        chdir: "{{ project_dest }}/dispatcher"
+        chdir: "{{ project_dest }}/Bot/dispatcher"
       register: maven_build
 
     - name: Проверить результат сборки Maven
