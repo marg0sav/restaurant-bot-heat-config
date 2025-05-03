@@ -82,12 +82,10 @@
           - maven_build.rc == 0
         fail_msg: "Maven build failed"
 
-    - name: Поднять контейнеры через docker-compose
-      community.docker.docker_compose:
-        project_src: "{{ project_dest }}/Bot"
-        state: present
-        pull: yes
-        build: yes
+    - name: Поднять контейнеры через docker-compose (shell)
+      command: docker-compose up -d --build
+      args:
+        chdir: "{{ project_dest }}/Bot"
 
     - name: Дождаться доступности PostgreSQL
       wait_for:
