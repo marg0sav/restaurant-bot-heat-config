@@ -6,7 +6,7 @@
   vars:
     # Репозиторий с вашим docker-compose.yml и .env
     project_repo: "https://github.com/StanislavaGus/Telegram_Restaurant_Bot.git"
-    project_dest: "/opt/dispatcher"
+    project_dest: "restaurant-bot"
 
   tasks:
     - name: Обновить apt-кэш и установить базовые пакеты
@@ -67,7 +67,7 @@
     - name: Собрать JAR-файл через Maven
       command: mvn clean package
       args:
-        chdir: "{{ project_dest }}/Bot/dispatcher"
+        chdir: "{{ project_dest }}/Bot"
       register: maven_build
 
     - name: Проверить результат сборки Maven
