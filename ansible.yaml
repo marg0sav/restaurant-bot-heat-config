@@ -1,0 +1,109 @@
+---
+- name: Deploy Dispatcher‐App Stack via Ansible
+  hosts: all
+  become: yes
+
+  vars:
+    # Репозиторий с вашим docker-compose.yml и .env
+    project_repo: "https://github.com/StanislavaGus/Telegram_Restaurant_Bot.git"
+    project_dest: "/opt/dispatcher"
+
+  tasks:
+    - name: Обновить apt-кэш и установить базовые пакеты
+      apt:
+        update_cache: yes
+        name:
+          - docker.io
+          - git
+          - python3
+          - python3-pip
+          - openjdk-21-jdk
+          - maven
+        state: present
+
+    - name: Установить docker-compose через pip3
+      pip:
+        name: docker-compose
+        executable: pip3
+
+    - name: Клонировать репозиторий Dispatcher-App
+      git:
+        repo: "{{ project_repo }}"
+        dest: "{{ project_dest }}"
+        version: fix-qualifier-
+        update: yes
+
+    - name: Привилегии на каталог проекта
+      file:
+        path: "{{ project_dest }}"
+        owner: "{{ ansible_user }}"
+        recurse: yes
+
+    - name: Перезаписать dispatcher properties
+      copy:
+        src: "{{ lookup('env','APPLICATION_DOCKER_PROPERTIES') }}"
+        dest: "{{ project_dest }}/Bot/dispatcher/src/main/resources/application-docker.properties"
+        owner: ubuntu
+        mode: '0644'
+        force: yes
+
+    - name: Перезаписать node properties
+      copy:
+        src: "{{ lookup('env','APPP_PROPERTIES') }}"
+        dest: "{{ project_dest }}/Bot/node/src/main/resources/appp.properties"
+        owner: ubuntu
+        mode: '0644'
+        force: yes
+
+    - name: Перезаписать .env
+      copy:
+        src: "{{ lookup('env','DOTENV') }}"
+        dest: "{{ project_dest }}/Bot/.env"
+        owner: ubuntu
+        mode: '0644'
+        force: yes
+
+    - name: Собрать JAR-файл через Maven
+      command: mvn clean package
+      args:
+        chdir: "{{ project_dest }}/dispatcher"
+      register: maven_build
+
+    - name: Проверить результат сборки Maven
+      assert:
+        that:
+          - maven_build.rc == 0
+        fail_msg: "Maven build failed"
+
+    - name: Поднять контейнеры через docker-compose
+      community.docker.docker_compose:
+        project_src: "{{ project_dest }}"
+        state: present
+        pull: yes
+        build: yes
+
+    - name: Дождаться доступности PostgreSQL
+      wait_for:
+        host: localhost
+        port: 5432
+        delay: 5
+        timeout: 60
+
+    - name: Дождаться доступности RabbitMQ
+      wait_for:
+        host: localhost
+        port: 5672
+        delay: 5
+        timeout: 60
+
+    - name: Проверить статус контейнеров
+      community.docker.docker_container_info:
+        name:
+          - postgres-db
+          - my_rabbitmq
+          - dispatcher-app
+      register: container_info
+
+    - name: Вывести информацию о контейнерах
+      debug:
+        var: container_info.results
