@@ -22,10 +22,10 @@
         state: present
 
     - name: Удалить старый пакет docker.io (если установлен)
-    apt:
-      name: docker.io
-      state: absent
-      purge: yes
+      apt:
+        name: docker.io
+        state: absent
+        purge: yes
 
     - name: Удалить pip-версию docker-compose (если осталась)
       pip:
