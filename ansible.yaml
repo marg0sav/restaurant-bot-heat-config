@@ -21,7 +21,13 @@
           - maven
         state: present
 
-    - name: Установить docker-compose через pip3
+    - name: Python Docker SDK (docker-py) compatible version
+      pip:
+        name:
+          - "docker>=4.4.0,<5.0.0"
+        executable: pip3
+
+    - name: Install docker-compose via pip3
       pip:
         name: docker-compose
         executable: pip3
