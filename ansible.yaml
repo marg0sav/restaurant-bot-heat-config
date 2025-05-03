@@ -21,7 +21,13 @@
           - maven
         state: present
 
-    - name: Удалить старый docker-compose (если установлен)
+    - name: Удалить старый пакет docker.io (если установлен)
+    apt:
+      name: docker.io
+      state: absent
+      purge: yes
+
+    - name: Удалить pip-версию docker-compose (если осталась)
       pip:
         name: docker-compose
         state: absent
@@ -31,20 +37,20 @@
       ansible.builtin.apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         keyring: /etc/apt/keyrings/docker.gpg
-
-    - name: Добавить apt-репозиторий Docker
+  
+    - name: Добавить официальный репозиторий Docker
       ansible.builtin.apt_repository:
         repo: >
           deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg]
           https://download.docker.com/linux/ubuntu
           {{ ansible_lsb.codename }} stable
         filename: docker
-
-    - name: Обновить кэш apt
+  
+    - name: Обновить кэш apt после добавления репо
       ansible.builtin.apt:
         update_cache: yes
-
-    - name: Установить Docker CE и плагин Docker Compose v2
+  
+    - name: Установить Docker CE и плагины Buildx и Compose v2
       ansible.builtin.apt:
         name:
           - docker-ce
@@ -53,11 +59,31 @@
           - docker-buildx-plugin
           - docker-compose-plugin
         state: present
-
-    - name: Удаление local-pip docker-compose( если остался)
+  
+    - name: Создать симлинк /usr/local/bin/docker-compose → плагину v2
       file:
-        path: /usr/local/bin/docker-compose
-        state: absent
+        src: /usr/lib/docker/cli-plugins/docker-compose
+        dest: /usr/local/bin/docker-compose
+        state: link
+        mode: '0755'
+  
+    - name: Добавить пользователя в группу docker
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+  
+    - name: Убедиться, что docker и compose плагин доступны
+      ansible.builtin.command: "{{ item }}"
+      register: verif
+      changed_when: false
+      with_items:
+        - docker --version
+        - docker compose version
+  
+    - name: Вывести версии Docker и Compose
+      ansible.builtin.debug:
+        var: verif.results
 
     - name: Клонировать репозиторий Dispatcher-App
       git:
