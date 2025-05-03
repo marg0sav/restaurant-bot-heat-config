@@ -78,7 +78,7 @@
 
     - name: Поднять контейнеры через docker-compose
       community.docker.docker_compose:
-        project_src: "{{ project_dest }}"
+        project_src: "{{ project_dest }}/Bot"
         state: present
         pull: yes
         build: yes
