@@ -26,12 +26,14 @@
         name: docker-compose
         executable: pip3
 
-    - name: Клонировать репозиторий Dispatcher-App
+     - name: Клонировать репозиторий Dispatcher-App
       git:
         repo: "{{ project_repo }}"
         dest: "{{ project_dest }}"
         version: fix-qualifier-
         update: yes
+        force: yes
+        clean: yes
 
     - name: Привилегии на каталог проекта
       file:
