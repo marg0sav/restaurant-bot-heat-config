@@ -20,6 +20,11 @@
           - maven
         state: present
 
+    - name: Установить Docker SDK для Python
+      pip:
+        name: docker
+        executable: pip3
+
     - name: Проверить, установлен ли Docker
       stat:
         path: /usr/bin/docker
