@@ -56,6 +56,35 @@ resource "yandex_vpc_security_group_rule" "savenko_allow_ssh" {
   port                   = 22
 }
 
+# HTTP Ingress
+resource "yandex_vpc_security_group_rule" "savenko_allow_http" {
+  security_group_binding = yandex_vpc_security_group.savenko_sg.id
+  direction              = "ingress"
+  description            = "Allow HTTP"
+  v4_cidr_blocks         = ["0.0.0.0/0"]
+  protocol               = "TCP"
+  port                   = 80
+}
+
+# HTTPS Ingress
+resource "yandex_vpc_security_group_rule" "savenko_allow_https" {
+  security_group_binding = yandex_vpc_security_group.savenko_sg.id
+  direction              = "ingress"
+  description            = "Allow HTTPS"
+  v4_cidr_blocks         = ["0.0.0.0/0"]
+  protocol               = "TCP"
+  port                   = 443
+}
+
+# All Egress (outbound)
+resource "yandex_vpc_security_group_rule" "savenko_allow_all_egress" {
+  security_group_binding = yandex_vpc_security_group.savenko_sg.id
+  direction              = "egress"
+  description            = "Allow all outbound traffic"
+  v4_cidr_blocks         = ["0.0.0.0/0"]
+  protocol               = "ANY"
+}
+
 #
 # Диск
 #
