@@ -123,18 +123,6 @@
         mode: '0644'
         force: yes
 
-    - name: Собрать JAR-файл через Maven
-      command: mvn clean package
-      args:
-        chdir: "{{ project_dest }}/Bot"
-      register: maven_build
-
-    - name: Проверить результат сборки Maven
-      assert:
-        that:
-          - maven_build.rc == 0
-        fail_msg: "Maven build failed"
-
     - name: Поднять контейнеры через docker-compose (shell)
       command: docker compose up -d --build
       args:
