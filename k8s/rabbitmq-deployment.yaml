@@ -16,16 +16,16 @@ spec:
       - name: rabbitmq
         image: rabbitmq:3-management
         env:
-        - name: RABBITMQ_DEFAULT_USER
-          valueFrom:
-            secretKeyRef:
-              name: restaurantbot-secrets
-              key: RABBITMQ_USERNAME
-        - name: RABBITMQ_DEFAULT_PASS
-          valueFrom:
-            secretKeyRef:
-              name: restaurantbot-secrets
-              key: RABBITMQ_PASSWORD
+          - name: RABBITMQ_DEFAULT_USER
+            valueFrom:
+              configMapKeyRef:
+                name: restaurantbot-config
+                key: RABBITMQ_USERNAME
+          - name: RABBITMQ_DEFAULT_PASS
+            valueFrom:
+              secretKeyRef:
+                name: restaurantbot-secrets
+                key: RABBITMQ_PASSWORD
         ports:
-        - containerPort: 5672
-        - containerPort: 15672
+          - containerPort: 5672
+          - containerPort: 15672
