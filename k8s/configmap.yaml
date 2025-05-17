@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restaurantbot-config
+data:
+  SPRING_PROFILES_ACTIVE: "docker"
+  DB_USERNAME:           "userok"
+  RABBITMQ_USERNAME:     "userok"
