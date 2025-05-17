@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurantbot
+  labels:
+    app: restaurantbot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: restaurantbot
+  template:
+    metadata:
+      labels:
+        app: restaurantbot
+    spec:
+      containers:
+      - name: dispatcher
+        image: marg0sav/restaurantbot:latest
+        ports:
+        - containerPort: 8088
+        envFrom:
+        - configMapRef:
+            name: restaurantbot-config
+        - secretRef:
+            name: restaurantbot-secrets
