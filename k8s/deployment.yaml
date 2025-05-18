@@ -14,6 +14,28 @@ spec:
       labels:
         app: restaurantbot
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z postgres-db 5432; do
+              echo "Waiting for Postgres..."
+              sleep 2
+            done
+      - name: wait-for-rabbit
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            until nc -z rabbitmq 5672; do
+              echo "Waiting for RabbitMQ..."
+              sleep 2
+            done
+
       containers:
       - name: dispatcher
         image: marg0sav/restaurantbot:latest
@@ -24,3 +46,10 @@ spec:
             name: restaurantbot-config
         - secretRef:
             name: restaurantbot-secrets
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8088
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 2
